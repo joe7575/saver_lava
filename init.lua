@@ -59,7 +59,7 @@ local function on_place(itemstack, user, pointed_thing)
 
 	-------------------------------- Start Modification
 	if lpos.y > 0 then
-		minetest.set_node(lpos, {name = "safer_lava:lava_source", param2 = 1})
+		minetest.set_node(lpos, {name = "safer_lava:lava"})
 	else
 		minetest.set_node(lpos, {name = "default:lava_source", param2 = 1})
 	end
@@ -72,16 +72,35 @@ minetest.override_item("bucket:bucket_lava", {
 		on_place = on_place,
 })
 
-local function register_fake_lava()
-	local ndef = minetest.registered_nodes["default:lava_source"] 
-
-	ndef.liquid_alternative_flowing = nil
-	ndef.liquid_alternative_source = nil
-	ndef.liquid_viscosity = nil
-	ndef.damage_per_second = 0
-
-	minetest.register_item("safer_lava:lava_source", ndef)
-end
-
-register_fake_lava()
---minetest.after(1, register_fake_lava)
+minetest.register_node("safer_lava:lava", {
+	description = "Lava",
+	drawtype = "liquid",
+	tiles = {
+		{
+			name = "default_lava_source_animated.png",
+			backface_culling = false,
+			animation = {
+				type = "vertical_frames",
+				aspect_w = 16,
+				aspect_h = 16,
+				length = 3.0,
+			},
+		},
+		{
+			name = "default_lava_source_animated.png",
+			backface_culling = true,
+			animation = {
+				type = "vertical_frames",
+				aspect_w = 16,
+				aspect_h = 16,
+				length = 3.0,
+			},
+		},
+	},
+	paramtype = "light",
+	light_source = default.LIGHT_MAX - 1,
+	is_ground_content = false,
+	drop = "",
+	post_effect_color = {a = 191, r = 255, g = 64, b = 0},
+	groups = {crumbly = 3, falling_node = 1, not_in_creative_inventory = 1},
+})
