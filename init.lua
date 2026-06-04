@@ -1,3 +1,8 @@
+minetest.register_privilege("liquid", 
+	{description = "'liquid' privs allow to place water on y level >= 5", 
+	give_to_singleplayer = false})
+
+
 -- derived from bucket/init.lua
 local function check_protection(pos, name, text)
 	if minetest.is_protected(pos, name) then
@@ -58,17 +63,35 @@ local function on_place(itemstack, user, pointed_thing)
 	end
 
 	-------------------------------- Start Modification
-	if lpos.y > 0 then
-		minetest.set_node(lpos, {name = "safer_lava:lava"})
-	else
-		minetest.set_node(lpos, {name = "default:lava_source", param2 = 1})
+	if user and user:is_player() then
+		local name = user:get_player_name()
+		if itemstack:get_name() == "bucket:bucket_lava" then
+			if lpos.y > 0 then
+				minetest.set_node(lpos, {name = "safer_lava:lava"})
+			else
+				minetest.set_node(lpos, {name = "default:lava_source"})
+			end
+		elseif itemstack:get_name() == "bucket:bucket_water" then
+			if lpos.y < 5 then
+				minetest.set_node(lpos, {name = "default:water_source"})
+			elseif minetest.check_player_privs(name, "liquid") then
+				minetest.set_node(lpos, {name = "default:water_source"})
+			else
+				minetest.chat_send_player(name, "'liquid' privs are missing!")
+				return
+			end
+		end
 	end
-	-------------------------------- End Modification
 	return ItemStack("bucket:bucket_empty")
+	-------------------------------- End Modification
 end
 
 
 minetest.override_item("bucket:bucket_lava", {
+		on_place = on_place,
+})
+
+minetest.override_item("bucket:bucket_water", {
 		on_place = on_place,
 })
 
