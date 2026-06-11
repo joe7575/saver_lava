@@ -77,8 +77,7 @@ local function on_place(itemstack, user, pointed_thing)
 			elseif minetest.check_player_privs(name, "liquid") then
 				minetest.set_node(lpos, {name = "default:water_source"})
 			else
-				minetest.chat_send_player(name, "'liquid' privs are missing!")
-				return
+				minetest.set_node(lpos, {name = "default:river_water_source"})
 			end
 		end
 	end
